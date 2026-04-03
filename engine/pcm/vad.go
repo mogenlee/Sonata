@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	webrtcvad "github.com/maxhawkins/go-webrtcvad"
+	webrtcvad "github.com/bytectlgo/webrtcvad-go"
 )
 
 // VADMode 是 WebRTC VAD 的激进度级别。
@@ -32,13 +32,9 @@ type VAD struct {
 // sampleRate 支持 8000、16000、32000 Hz。
 // mode 为激进度级别（0-3）。
 func NewVAD(sampleRate int, mode VADMode) (*VAD, error) {
-	vad, err := webrtcvad.New()
+	vad, err := webrtcvad.New(int(mode))
 	if err != nil {
-		return nil, fmt.Errorf("创建 WebRTC VAD: %w", err)
-	}
-
-	if err := vad.SetMode(int(mode)); err != nil {
-		return nil, fmt.Errorf("设置 VAD mode %d: %w", mode, err)
+		return nil, fmt.Errorf("创建 WebRTC VAD mode %d: %w", mode, err)
 	}
 
 	return &VAD{
@@ -54,7 +50,7 @@ func (v *VAD) IsSpeech(frame []byte) (bool, error) {
 	if len(frame) == 0 {
 		return false, errors.New("VAD process: 帧数据为空")
 	}
-	active, err := v.vad.Process(v.sampleRate, frame)
+	active, err := v.vad.IsSpeech(frame, v.sampleRate)
 	if err != nil {
 		return false, fmt.Errorf("VAD process: %w", err)
 	}
@@ -65,5 +61,5 @@ func (v *VAD) IsSpeech(frame []byte) (bool, error) {
 // WebRTC VAD 要求帧长度对应 10/20/30ms，参数为采样数（非字节数）。
 func (v *VAD) ValidFrame(frame []byte) bool {
 	sampleCount := len(frame) / 2 // 16-bit PCM，每采样 2 字节。
-	return v.vad.ValidRateAndFrameLength(v.sampleRate, sampleCount)
+	return webrtcvad.ValidRateAndFrameLength(v.sampleRate, sampleCount)
 }

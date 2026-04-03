@@ -2,7 +2,7 @@ module github.com/omeyang/Sonata
 
 go 1.25.7
 
-require github.com/maxhawkins/go-webrtcvad v0.0.0-20210121163624-be60036f3083
+require github.com/bytectlgo/webrtcvad-go v0.0.0-20251029075309-6b03219b15ae
 
 require (
 	github.com/kr/pretty v0.3.1 // indirect
