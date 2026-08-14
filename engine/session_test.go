@@ -170,6 +170,9 @@ type mockTTSProvider struct {
 }
 
 func (m *mockTTSProvider) SynthesizeStream(_ context.Context, textCh <-chan string, _ aiface.TTSConfig) (<-chan []byte, error) {
+	if m.synthErr != nil {
+		return nil, m.synthErr
+	}
 	ch := make(chan []byte, 16)
 	go func() {
 		defer close(ch)
@@ -1674,7 +1677,9 @@ func TestSynthesizeAndPlayStreamAsync(t *testing.T) {
 		}
 
 		played := trans.getPlayedAudio()
-		assert.GreaterOrEqual(t, len(played), 2, "应播放至少2个句段")
+		require.Len(t, played, 2, "SDK 应逐块交给 Transport")
+		assert.Equal(t, []byte{1, 2}, played[0])
+		assert.Equal(t, []byte{1, 2}, played[1])
 	})
 
 	t.Run("带onComplete回调", func(t *testing.T) {
