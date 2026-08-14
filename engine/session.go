@@ -32,6 +32,8 @@ type SpeechDetector interface {
 
 // Config 持有会话的所有依赖和配置。
 type Config struct {
+	// TTSMode 控制语音合成方式，默认 segmented 兼容原有行为。
+	TTSMode string
 	// SessionID 是会话的唯一标识。
 	SessionID string
 
@@ -437,7 +439,11 @@ func (s *Session) handleStreamingASR(ctx context.Context, evt aiface.ASREvent, s
 	s.tryHandleFSMEvent(mediafsm.EvProcessingDone, "handle processing done")
 
 	if s.cfg.TTS != nil {
-		s.synthesizeAndPlayStreamAsync(sentenceCh, nil)
+		if s.cfg.TTSMode == "streaming" {
+			s.synthesizeAndPlayTTSStreamAsync(sentenceCh, nil)
+		} else {
+			s.synthesizeAndPlayStreamAsync(sentenceCh, nil)
+		}
 	} else {
 		go func() {
 			for range sentenceCh {
@@ -447,6 +453,50 @@ func (s *Session) handleStreamingASR(ctx context.Context, evt aiface.ASREvent, s
 		s.RecordEvent(EventBotSpeakEnd, nil)
 		silenceTimer.Reset(time.Duration(s.cfg.Protection.MaxSilenceSec) * time.Second)
 	}
+}
+
+// synthesizeAndPlayTTSStreamAsync 将 LLM 句段直接送入 TTS 流，并持续播放返回音频。
+func (s *Session) synthesizeAndPlayTTSStreamAsync(textCh <-chan string, onComplete func()) {
+	if s.ttsCancel != nil {
+		s.ttsCancel()
+	}
+	ttsCtx, cancel := context.WithCancel(s.ctx)
+	s.ttsCancel = cancel
+	go func() {
+		defer func() {
+			s.ttsPlaying.Store(false)
+			if onComplete != nil {
+				onComplete()
+			}
+			select {
+			case s.botDoneCh <- struct{}{}:
+			default:
+			}
+		}()
+		s.playFiller(ttsCtx)
+		audioCh, err := s.cfg.TTS.SynthesizeStream(ttsCtx, textCh, s.cfg.TTSCfg)
+		if err != nil {
+			s.logger.Error("TTS 流启动失败", slog.String("error", err.Error()))
+			return
+		}
+		for {
+			select {
+			case <-ttsCtx.Done():
+				return
+			case audio, ok := <-audioCh:
+				if !ok {
+					return
+				}
+				if len(audio) == 0 {
+					continue
+				}
+				s.ttsPlaying.Store(true)
+				if err := s.cfg.Transport.PlayAudio(ttsCtx, audio); err != nil && ttsCtx.Err() == nil {
+					s.logger.Error("流式播放失败", slog.String("error", err.Error()))
+				}
+			}
+		}
+	}()
 }
 
 // handleSilenceTimeout 处理静默超时。
