@@ -119,13 +119,13 @@ fsm.Handle(mediafsm.EvAnswer)
 ## 快速开始
 
 ```bash
-go get github.com/omeyang/Sonata
+go get cnb.cool/mogenle/Sonata
 ```
 
 ```go
 import (
-    "github.com/omeyang/Sonata/engine"
-    "github.com/omeyang/Sonata/engine/mediafsm"
+    "cnb.cool/mogenle/Sonata/engine"
+    "cnb.cool/mogenle/Sonata/engine/mediafsm"
 )
 
 cfg := engine.Config{

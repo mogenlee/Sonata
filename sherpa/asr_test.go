@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/omeyang/Sonata/engine/aiface"
+	"cnb.cool/mogenle/Sonata/engine/aiface"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

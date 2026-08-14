@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/omeyang/Sonata/engine/aiface"
-	"github.com/omeyang/Sonata/engine/mediafsm"
+	"cnb.cool/mogenle/Sonata/engine/aiface"
+	"cnb.cool/mogenle/Sonata/engine/mediafsm"
 )
 
 // ---------------------------------------------------------------------------

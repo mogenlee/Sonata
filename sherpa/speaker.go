@@ -6,7 +6,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/omeyang/Sonata/engine/pcm"
+	"cnb.cool/mogenle/Sonata/engine/pcm"
 
 	sherpa "github.com/k2-fsa/sherpa-onnx-go/sherpa_onnx"
 )

@@ -19,9 +19,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/omeyang/Sonata/engine/aiface"
-	"github.com/omeyang/Sonata/engine/mediafsm"
-	"github.com/omeyang/Sonata/engine/pcm"
+	"cnb.cool/mogenle/Sonata/engine/aiface"
+	"cnb.cool/mogenle/Sonata/engine/mediafsm"
+	"cnb.cool/mogenle/Sonata/engine/pcm"
 )
 
 // SpeechDetector 检测音频帧是否包含人声。

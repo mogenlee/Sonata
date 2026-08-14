@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/omeyang/Sonata/engine/mediafsm"
+	"cnb.cool/mogenle/Sonata/engine/mediafsm"
 )
 
 // BenchmarkHandleAudioFrameWithResample 带重采样的完整帧处理（8→16kHz）。

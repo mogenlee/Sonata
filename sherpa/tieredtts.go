@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/omeyang/Sonata/engine/aiface"
+	"cnb.cool/mogenle/Sonata/engine/aiface"
 )
 
 // TieredTTSConfig 配置分层 TTS。

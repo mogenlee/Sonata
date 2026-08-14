@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/omeyang/Sonata/engine/aiface"
+	"cnb.cool/mogenle/Sonata/engine/aiface"
 )
 
 // RacingASRConfig 配置竞速 ASR。

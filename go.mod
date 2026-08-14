@@ -1,4 +1,4 @@
-module github.com/omeyang/Sonata
+module cnb.cool/mogenle/Sonata
 
 go 1.25.7
 
